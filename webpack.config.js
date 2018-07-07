@@ -20,14 +20,16 @@ module.exports = {
         }
       },
       {
+        // Transform our own .css files with PostCSS and CSS-modules
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        exclude: /node_modules/,
+        use: ['style-loader', 'css-loader'],
       }
     ]
   },
   devServer: {
     port: 3000,
-    open: true,
+    open: false,
     proxy: {
       '/api': 'http://localhost:8080'
     }
