@@ -10,7 +10,12 @@ export default class App extends Component {
     this.hideNewPlayerModal = this.hideNewPlayerModal.bind(this);
 
     this.state = { 
-      newPlayerModal: false
+      newPlayerModal: false,
+      newPlayer: {
+        firstName: null,
+        lastName: null,
+        nickName: null
+      }
     };
   }
 
@@ -24,6 +29,10 @@ export default class App extends Component {
 
   hideNewPlayerModal() {
     this.setState({ newPlayerModal: false });
+  }
+
+  saveNewPlayer(newPlayer) {
+      alert("firstName: " + newPlayer.firstName + ", lastName: " + newPlayer.lastName + ", nickName: " + newPlayer.nickName)
   }
 
   render() {
@@ -40,6 +49,7 @@ export default class App extends Component {
         <NewPlayerModalComponent 
           newPlayerModal={this.state.newPlayerModal}
           hideNewPlayerModal={this.hideNewPlayerModal}
+          saveNewPlayer={(newPlayer) => this.saveNewPlayer(newPlayer)}
         />
       </Row>
     );
