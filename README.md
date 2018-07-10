@@ -5,3 +5,5 @@ This is the second version of my pingPong app - now using Node, React, Express, 
 This time, the goal is to understand how all the pieces of the stack fit together, as opposed to using the auto-generate features within Visual Studio/.NET.
 
 When it is finished, it will be deployed locally on an old Linux laptop at the IQ office to track game statistics and betting ledgers.
+
+![new-player-modal-and-alerts](https://github.com/ayeungturtle/gifs/blob/master/pong_newPlayerModalAndAlerts.gif)

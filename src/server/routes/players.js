@@ -4,7 +4,7 @@ const db = require ('../db/knex');
 const bodyParser = require('body-parser');
 router.use(bodyParser.json());  // !!!!! do I need this to be here as well as index.js?
 
-router.get('/players', (req, res) => {
+router.get('/api/players', (req, res) => {
     db('players')
     .select()
     .then(allPlayers => {
@@ -15,7 +15,7 @@ router.get('/players', (req, res) => {
     });
 });
 
-router.get('/players/:id', (req, res) => {
+router.get('/api/players/:id', (req, res) => {
     db('players')
     .where({
         id: req.params.id
@@ -32,7 +32,7 @@ router.get('/players/:id', (req, res) => {
     });
 });
 
-router.post('/players', (req, res) => {
+router.post('/api/players', (req, res) => {
     db('players')
     .insert({
         firstName: req.body.firstName,

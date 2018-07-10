@@ -129,8 +129,8 @@ export class NewPlayerModalComponent extends React.Component {
             </FormGroup>
         </Modal.Body>
         <Modal.Footer>
-            <Button className="pull-left" bsStyle="warning" onClick={this.close}>Cancel</Button>
-            <Button className="pull-right" bsStyle="success" onClick={this.save}>Save</Button>
+            <Button className="pull-left" bsStyle="warning" bsSize="large" onClick={this.close}>Cancel</Button>
+            <Button className="pull-right" bsStyle="success" bsSize="large" onClick={this.save}>Save</Button>
         </Modal.Footer> 
         </Modal>
       );
