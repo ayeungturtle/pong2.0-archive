@@ -6,4 +6,6 @@ This time, the goal is to understand how all the pieces of the stack fit togethe
 
 When it is finished, it will be deployed locally on an old Linux laptop at the IQ office to track game statistics and betting ledgers.
 
+
+New Player modal and alerts:
 ![new-player-modal-and-alerts](https://github.com/ayeungturtle/gifs/blob/master/pong_newPlayerModalAndAlerts.gif)
