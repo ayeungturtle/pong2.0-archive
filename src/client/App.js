@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { FormControl, FormGroup, Row, Col, Button, ControlLabel, HelpBlock } from 'react-bootstrap';
+import { FormControl, FormGroup, Button, Grid, Row, Col, Tabs, Tab } from 'react-bootstrap';
 import { NewPlayerModalComponent } from './components/NewPlayerModalComponent';
 import { AlertComponent } from './components/AlertComponent';
+import { PingKingComponent } from './components/PingKingComponent';
 
 export default class App extends Component {
     constructor(props) {
@@ -73,28 +74,35 @@ export default class App extends Component {
 
     render() {
         return (
-        <div>
-            <Row>
-                <Col md={10}>
-                main app
-                </Col>
-                <Col md={2}>
-                <Button bsStyle="primary" bsSize="large" onClick={this.showNewPlayerModal}>
-                    New Player
-                </Button>        
-                </Col>
+            <Grid>
+                <Row className="header-row">
+                    <Col md={10}>
+                        <Tabs defaultActiveKey={0} id="Game Mode Tabs">
+                            <Tab eventKey={0} title="Ping King">
+                                <PingKingComponent/>
+                            </Tab>
+                            <Tab eventKey={1} title="Random Robin">
+                                rando
+                            </Tab>
+                        </Tabs>
+                    </Col>
+                    <Col md={2}>
+                        <Button bsStyle="primary" onClick={this.showNewPlayerModal}>
+                            New Player
+                        </Button>
+                    </Col>
+                </Row>
                 <NewPlayerModalComponent 
                     newPlayerModal={this.state.newPlayerModal}
                     hideNewPlayerModal={this.hideNewPlayerModal}
                     saveNewPlayer={(newPlayer) => this.saveNewPlayer(newPlayer)}
                 />
-            </Row>
-            <AlertComponent
-                alertType={this.state.alertType}
-                newPlayer={this.state.newPlayer}
-                dismissAlert={this.dismissAlert}
-            />
-        </div>
+                <AlertComponent
+                    alertType={this.state.alertType}
+                    newPlayer={this.state.newPlayer}
+                    dismissAlert={this.dismissAlert}
+                />
+            </Grid>
         );
     }
 }
