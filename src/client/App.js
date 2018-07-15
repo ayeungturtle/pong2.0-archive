@@ -3,29 +3,37 @@ import { FormControl, FormGroup, Button, Grid, Row, Col, Tabs, Tab } from 'react
 import { NewPlayerModalComponent } from './components/NewPlayerModalComponent';
 import { AlertComponent } from './components/AlertComponent';
 import { PingKingComponent } from './components/PingKingComponent';
+import { NewPlayerComponent } from './components/NewPlayerComponent';
 
 export default class App extends Component {
     constructor(props) {
         super(props);
 
-        this.showNewPlayerModal = this.showNewPlayerModal.bind(this);
-        this.hideNewPlayerModal = this.hideNewPlayerModal.bind(this);
-        this.saveNewPlayer = this.saveNewPlayer.bind(this);
-        this.dismissAlert = this.dismissAlert.bind(this);
-
-        this.state = { 
+        this.state = {
+            players: [],
             newPlayerModal: false,
             newPlayer: {
                 firstName: null,
                 lastName: null,
                 nickName: null
             },
-            alertType: 0
+            alertType: 0,
+            pingKing: {
+                players: [],
+                activePlayers: [],
+                inactivePlayers: []
+            }
         };
+
+        this.showNewPlayerModal = this.showNewPlayerModal.bind(this);
+        this.hideNewPlayerModal = this.hideNewPlayerModal.bind(this);
+        this.saveNewPlayer = this.saveNewPlayer.bind(this);
+        this.dismissAlert = this.dismissAlert.bind(this);
+        this.getPlayers = this.getPlayers.bind(this);
     }
 
     componentDidMount() {
-    
+        this.getPlayers();
     }
 
     showNewPlayerModal() {
@@ -36,15 +44,29 @@ export default class App extends Component {
         this.setState({ newPlayerModal: false });
     }
 
+    getPlayers() {
+        fetch('api/players', {
+            method: 'GET'
+        })
+        .then(res => {
+            if (res.status === 200) {
+                res.json()
+                .then(players => {
+                    this.setState({ players: players })
+                });
+            }
+        });
+    };
+
     saveNewPlayer(newPlayer) {
         fetch('api/players', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify ({
-            firstName: newPlayer.firstName,
-            lastName: newPlayer.lastName,
-            nickName: newPlayer.nickName === '' ? null : newPlayer.nickName
-        })
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify ({
+                firstName: newPlayer.firstName,
+                lastName: newPlayer.lastName,
+                nickName: newPlayer.nickName === '' ? null : newPlayer.nickName
+            })
         })
         .then(res => {
             if (res.status === 201) {
@@ -76,21 +98,31 @@ export default class App extends Component {
         return (
             <Grid>
                 <Row className="header-row">
-                    <Col md={10}>
+                    <Col md={12}>
                         <Tabs defaultActiveKey={0} id="Game Mode Tabs">
                             <Tab eventKey={0} title="Ping King">
-                                <PingKingComponent/>
+                                <PingKingComponent
+                                />
                             </Tab>
                             <Tab eventKey={1} title="Random Robin">
                                 rando
                             </Tab>
+                            <Tab eventKey={2} title="New Player">
+                                <NewPlayerComponent 
+                                    newPlayerModal={this.state.newPlayerModal}
+                                    hideNewPlayerModal={this.hideNewPlayerModal}
+                                    saveNewPlayer={(newPlayer) => this.saveNewPlayer(newPlayer)}
+                                />
+                            </Tab>
                         </Tabs>
                     </Col>
-                    <Col md={2}>
-                        <Button bsStyle="primary" onClick={this.showNewPlayerModal}>
-                            New Player
-                        </Button>
-                    </Col>
+                    {/* <Col >
+                        <Row>
+                            <Button bsStyle="primary" onClick={this.showNewPlayerModal}>
+                                New Player
+                            </Button>
+                        </Row>
+                    </Col> */}
                 </Row>
                 <NewPlayerModalComponent 
                     newPlayerModal={this.state.newPlayerModal}

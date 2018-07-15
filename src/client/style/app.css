@@ -14,3 +14,11 @@ h1 {
 .header-row {
     margin: 15px;
 }
+
+.red {
+    background-color: red
+}  
+
+.add-player {
+    height: 100%;
+}

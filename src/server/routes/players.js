@@ -7,6 +7,7 @@ router.use(bodyParser.json());  // !!!!! do I need this to be here as well as in
 router.get('/api/players', (req, res) => {
     db('players')
     .select()
+    .orderBy('firstName')
     .then(allPlayers => {
         res.status(200).json(allPlayers)
     })
