@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, Modal, Button, FormGroup, Select, Row, FormControl, DropdownButton, MenuItem, Col, ControlLabel, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Alert, Modal, Button, Glyphicon, FormGroup, Select, Row, FormControl, DropdownButton, MenuItem, Col, ControlLabel, ListGroup, ListGroupItem } from 'react-bootstrap';
 
 export class PingKingComponent extends React.Component {
     constructor(props, context) {
@@ -10,12 +10,16 @@ export class PingKingComponent extends React.Component {
             inactivePlayers: [],
             selectedPlayer: null,
             player1: null,
-            player2: null
+            player2: null,
+            player1Score: 0,
+            player2Score: 0
         };
         
         this.getPlayers = this.getPlayers.bind(this);
         this.enqueuePlayer = this.enqueuePlayer.bind(this);
         this.removeFromQueue = this.removeFromQueue.bind(this);
+        this.incrementScore = this.incrementScore.bind(this);
+        this.decrementScore = this.decrementScore.bind(this);
     }
 
     componentDidMount() {
@@ -43,7 +47,15 @@ export class PingKingComponent extends React.Component {
                 if (player.id === selectedPlayer.id)
                     tempInactivePlayers.splice(index, 1);
             });
-            this.setState({ playerQueue: [...this.state.playerQueue, selectedPlayer], inactivePlayers: tempInactivePlayers });
+            if (this.state.player1 == null) {
+                this.setState({ inactivePlayers: tempInactivePlayers, player1: selectedPlayer })
+            } 
+            else if (this.state.player2 == null) {
+                this.setState({ inactivePlayers: tempInactivePlayers, player2: selectedPlayer })
+            }
+            else {
+                this.setState({ playerQueue: [...this.state.playerQueue, selectedPlayer], inactivePlayers: tempInactivePlayers });
+            }
         }
     }
 
@@ -75,24 +87,37 @@ export class PingKingComponent extends React.Component {
                                 tempInactivePlayers = tempInactivePlayers.concat(removePlayer);
                         }   
                     }
-                    // this.state.inactivePlayers.forEach((inactivePlayer, index) => {
-                    //     if (index === 0) {
-                    //         if (removePlayer.firstName < inactivePlayer.firstName)
-                    //             tempInactivePlayers.unshift(removePlayer);
-                    //     }
-                    //     else {
-                    //         if (removePlayer.firstName > this.state.inactivePlayers[index - 1].firstName && removePlayer.firstName < inactivePlayer.firstName) {
-                    //             console.log("between" + tempInactivePlayers[index - 1].firstName + " and " + tempInactivePlayers[index].firstName)
-                    //             tempInactivePlayers = [tempInactivePlayers.slice(0, index), removePlayer, tempInactivePlayers.slice(index)];
-                    //         }
-                    //     }
-                    // });
                 }
             });
         }
         this.setState({ inactivePlayers: tempInactivePlayers, playerQueue: tempPlayerQueue })
     }
 
+    incrementScore(player) {
+        switch(player) {
+            case "player1":
+                this.setState({ player1Score: this.state.player1Score + 1 });
+                break;
+            case "player2":
+                this.setState({ player2Score: this.state.player2Score + 1 });
+                break;
+            default:
+                break;
+        }
+    }
+
+    decrementScore(player) {
+        switch(player) {
+            case "player1":
+                this.setState({ player1Score: this.state.player1Score - 1 });
+                break;
+            case "player2":
+                this.setState({ player2Score: this.state.player2Score - 1 });
+                break;
+            default:
+                break;
+        }
+    }
 
     formatPlayerName(player) {
         return (player.firstName + " " + player.lastName);
@@ -164,6 +189,33 @@ export class PingKingComponent extends React.Component {
                             }                 
                         </ListGroup>
                     </Row>
+                </Col>
+                <Col md={4} sm={4} className="text-center">
+                    <Row>
+                        <h1 onClick={() => this.incrementScore("player1")} > {this.state.player1Score} </h1>
+                        <button onClick={() => this.decrementScore("player1")}>-</button>
+                    </Row>
+                    { this.state.player1 !== null & this.state.player1 !== "" &&
+                        <h1>
+                            {this.formatPlayerName(this.state.player1)}
+                        </h1>
+                    }
+                </Col>
+                <Col md={4} sm={4} className="text-center">
+                    <Row >
+                        <h1 onClick={() => this.incrementScore("player2")} > {this.state.player2Score} </h1>
+                        <button onClick={() => this.decrementScore("player2")}>-</button>
+                    </Row>
+                    { this.state.player2 !== null & this.state.player2 !== "" &&
+                        <h1>
+                            {this.formatPlayerName(this.state.player2)}
+                        </h1>
+                    }
+                </Col>
+                <Col md={1} sm={1}>
+                    <Button>
+                        <span className="glyphicon glyphicon-ok"></span>
+                    </Button>   
                 </Col>
             </Row>
         )
