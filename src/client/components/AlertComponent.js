@@ -8,15 +8,17 @@ export class AlertComponent extends React.Component {
         this.state = {
             alertTypes: {
                 noAlert: 0,
-                newPlayerSaveSucess: 1,
+                newPlayerSaveSuccess: 1,
                 newPlayerSaveFailure: 2,
+                gameSaveSuccess: 3,
+                gameSaveFailure: 4
             }
         };
     }
   
     render() {
         switch(this.props.alertType) {
-            case this.state.alertTypes.newPlayerSaveSucess:
+            case this.state.alertTypes.newPlayerSaveSuccess:
                 return (
                     <Alert bsStyle="success" className="alert-bottom" onDismiss={this.props.dismissAlert}>
                         {"New player saved: " + this.props.newPlayer.firstName + " " + this.props.newPlayer.lastName}
@@ -27,6 +29,20 @@ export class AlertComponent extends React.Component {
                 return (
                     <Alert bsStyle="danger" className="alert-bottom" onDismiss={this.props.dismissAlert}>
                        Error:  New player failed to save.
+                    </Alert>
+                );
+                break;
+            case this.state.alertTypes.gameSaveSuccess:
+                return (
+                    <Alert bsStyle="success" className="alert-bottom" onDismiss={this.props.dismissAlert}>
+                        { "Game saved: " + this.props.lastGameSaved }
+                    </Alert>
+                );
+                break;
+            case this.state.alertTypes.gameSaveFailure:
+                return (
+                    <Alert bsStyle="danger" className="alert-bottom" onDismiss={this.props.dismissAlert}>
+                       Error:  Game failed to save.
                     </Alert>
                 );
                 break;

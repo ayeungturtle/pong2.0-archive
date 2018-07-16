@@ -22,7 +22,8 @@ export default class App extends Component {
                 players: [],
                 activePlayers: [],
                 inactivePlayers: []
-            }
+            },
+            lastGameSaved: null
         };
 
         this.showNewPlayerModal = this.showNewPlayerModal.bind(this);
@@ -30,6 +31,7 @@ export default class App extends Component {
         this.saveNewPlayer = this.saveNewPlayer.bind(this);
         this.dismissAlert = this.dismissAlert.bind(this);
         this.getPlayers = this.getPlayers.bind(this);
+        this.alertGameSaved = this.alertGameSaved.bind(this);
     }
 
     componentDidMount() {
@@ -81,13 +83,24 @@ export default class App extends Component {
                         alertType: 1
                     })
                 });
-                setTimeout(() => this.setState({ alertType: 0 }), 5000);
+                setTimeout(() => this.dismissAlert(), 5000);
             }
             else {
                 this.setState({ alertType: 2 });
-                setTimeout(() => this.setState({ alertType: 0 }), 5000);                
+                setTimeout(() => this.dismissAlert(), 5000);                
             }
         })
+    }
+
+    alertGameSaved(success, newGame) {
+        if (success) {
+            this.setState({ alertType: 3, lastGameSaved: newGame });
+            setTimeout(() => this.dismissAlert(), 5000);
+        } 
+        else {
+            this.setState({ alertType: 4 });
+            setTimeout(() => this.dismissAlert(), 5000);
+        }
     }
 
     dismissAlert() {
@@ -102,6 +115,7 @@ export default class App extends Component {
                         <Tabs defaultActiveKey={0} id="Game Mode Tabs">
                             <Tab eventKey={0} title="Ping King">
                                 <PingKingComponent
+                                alertGameSaved={(success, newGame) => this.alertGameSaved(success, newGame)}
                                 />
                             </Tab>
                             <Tab eventKey={1} title="Random Robin">
@@ -133,6 +147,7 @@ export default class App extends Component {
                     alertType={this.state.alertType}
                     newPlayer={this.state.newPlayer}
                     dismissAlert={this.dismissAlert}
+                    lastGameSaved={this.state.lastGameSaved}
                 />
             </Grid>
         );

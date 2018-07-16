@@ -20,6 +20,7 @@ export class PingKingComponent extends React.Component {
         this.removeFromQueue = this.removeFromQueue.bind(this);
         this.incrementScore = this.incrementScore.bind(this);
         this.decrementScore = this.decrementScore.bind(this);
+        this.submitGame = this.submitGame.bind(this);
     }
 
     componentDidMount() {
@@ -122,6 +123,59 @@ export class PingKingComponent extends React.Component {
     formatPlayerName(player) {
         return (player.firstName + " " + player.lastName);
     }
+
+    submitGame() {
+        if (this.state.player1 == null || this.state.player2 == null)
+            return;
+        const player1 = this.state.player1;
+        const player2 = this.state.player2;
+        const player1Score = this.state.player1Score;
+        const player2Score = this.state.player2Score;
+        var winnerId;
+        var loserId;
+        var winnerScore;
+        var loserScore;
+        if (player1Score > player2Score) {
+            winnerId = player1.id;
+            loserId = player2.id;
+            winnerScore = player1Score;
+            loserScore = player2Score;
+        }
+        else if (player2Score > player1Score) {
+            winnerId = player2.id;
+            loserId = player1.id;
+            winnerScore = player2Score;
+            loserScore = player1Score;
+        }
+        else {
+            alert("There are no ties in ping pong, you fool.");
+            return;
+        }
+        var newGame = {
+            winnerId,
+            loserId,
+            winnerScore,
+            loserScore,
+            isTournamentGame: 0
+        };
+        confirm(this.formatPlayerName(player2) + " " + player2Score + " - " + player1Score + " " + this.formatPlayerName(player1) )
+        fetch('api/games', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify (newGame)
+        })
+        .then(res => {
+            if (res.status === 201) {
+                res.json()
+                .then(() => {
+                    this.props.alertGameSaved(true, this.formatPlayerName(player2) + " " + player2Score + " - " + player1Score + " " + this.formatPlayerName(player1) );
+                });
+            }
+            else {
+                this.props.alertGameSaved(false, null);              
+            }
+        })
+    }
   
     render() {
         return (
@@ -191,30 +245,30 @@ export class PingKingComponent extends React.Component {
                     </Row>
                 </Col>
                 <Col md={4} sm={4} className="text-center">
-                    <Row>
-                        <h1 onClick={() => this.incrementScore("player1")} > {this.state.player1Score} </h1>
-                        <button onClick={() => this.decrementScore("player1")}>-</button>
-                    </Row>
-                    { this.state.player1 !== null & this.state.player1 !== "" &&
-                        <h1>
-                            {this.formatPlayerName(this.state.player1)}
-                        </h1>
-                    }
-                </Col>
-                <Col md={4} sm={4} className="text-center">
                     <Row >
                         <h1 onClick={() => this.incrementScore("player2")} > {this.state.player2Score} </h1>
                         <button onClick={() => this.decrementScore("player2")}>-</button>
                     </Row>
-                    { this.state.player2 !== null & this.state.player2 !== "" &&
+                    { this.state.player2 !== null && this.state.player2 !== "" &&
                         <h1>
                             {this.formatPlayerName(this.state.player2)}
                         </h1>
                     }
                 </Col>
+                <Col md={4} sm={4} className="text-center">
+                    <Row>
+                        <h1 onClick={() => this.incrementScore("player1")} > {this.state.player1Score} </h1>
+                        <button onClick={() => this.decrementScore("player1")}>-</button>
+                    </Row>
+                    { this.state.player1 !== null && this.state.player1 !== "" &&
+                        <h1>
+                            {this.formatPlayerName(this.state.player1)}
+                        </h1>
+                    }
+                </Col>
                 <Col md={1} sm={1}>
-                    <Button>
-                        <span className="glyphicon glyphicon-ok"></span>
+                    <Button onClick={this.submitGame}>
+                        SUBMIT
                     </Button>   
                 </Col>
             </Row>
