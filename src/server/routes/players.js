@@ -52,4 +52,82 @@ router.post('/api/players', (req, res) => {
     });
 });
 
+router.get('/api/players/stats/:id1/:id2', (req, res) => {
+    var stats = {
+        player1: {
+            totalWins: null,
+            totalLosses: null,
+            h2hWins: null,
+            winProbability: null
+        },
+        player2: {
+            totalWins: null,
+            totalLosses: null,
+            h2hWins: null,
+            winProbability: null
+        }  
+    };
+    db('games')
+    .where({ winnerId: req.params.id1 })
+    .count({ count: '*' })
+    .first()
+    .then(p1TotalWins => {
+        stats.player1.totalWins = p1TotalWins.count;
+        db('games')
+        .where({ winnerId: req.params.id2 })
+        .count({ count: '*' })
+        .first()
+        .then(p2TotalWins => {
+            stats.player2.totalWins = p2TotalWins.count;    
+            db('games')
+            .where({ loserId: req.params.id1 })
+            .count({ count: '*' })
+            .first()
+            .then(p1TotalLosses => {
+                stats.player1.totalLosses = p1TotalLosses.count;
+                db('games')
+                .where({ loserId: req.params.id2 })
+                .count({ count: '*' })
+                .first()
+                .then(p2TotalLosses => {
+                    stats.player2.totalLosses = p2TotalLosses.count;
+                    db('games')
+                    .where({ winnerId: req.params.id1, loserId: req.params.id2 })
+                    .count({ count: '*' })
+                    .first()
+                    .then(p1h2hWins => {
+                        stats.player1.h2hWins = p1h2hWins.count;
+                        db('games')
+                        .where({ winnerId: req.params.id2, loserId: req.params.id1 })
+                        .count({ count: '*' })
+                        .first()
+                        .then(p2h2hWins => {
+                            stats.player2.h2hWins = p2h2hWins.count;
+                            res.status(200).json(stats); //// THE END
+                        })
+                        .catch((error) => {
+                            res.status(500).json({ error });
+                        });
+                    })
+                    .catch((error) => {
+                        res.status(500).json({ error });
+                    });
+                })
+                .catch((error) => {
+                    res.status(500).json({ error });
+                }); 
+            })
+            .catch((error) => {
+                res.status(500).json({ error });
+            });      
+        })
+        .catch((error) => {
+            res.status(500).json({ error });
+        });
+    })
+    .catch((error) => {
+        res.status(500).json({ error });
+    });
+});
+
 module.exports = router; //makes this available in index.js
