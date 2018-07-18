@@ -21,6 +21,7 @@ export class PingKingComponent extends React.Component {
         this.incrementScore = this.incrementScore.bind(this);
         this.decrementScore = this.decrementScore.bind(this);
         this.submitGame = this.submitGame.bind(this);
+        this.queueLoser = this.queueLoser.bind(this);
     }
 
     componentDidMount() {
@@ -67,29 +68,41 @@ export class PingKingComponent extends React.Component {
         var previousInactivePlayerString;
         var removePlayerString;
         if (removePlayer != null) {
-            this.state.playerQueue.forEach((queuedPlayer, index) => {
-                if (queuedPlayer.id === removePlayer.id) {
-                    tempPlayerQueue.splice(index, 1);
-                    for (var i = 0; i < this.state.inactivePlayers.length; i++) {
-                        nextInactivePlayerString = this.formatPlayerName(this.state.inactivePlayers[i]).toLowerCase();
-                        removePlayerString = this.formatPlayerName(removePlayer).toLowerCase();
-                        if (i === 0) {
-                            if (removePlayerString < nextInactivePlayerString) {
-                                tempInactivePlayers.unshift(removePlayer);
-                                break;
-                            }
-                        } else {
-                            previousInactivePlayerString = this.formatPlayerName(this.state.inactivePlayers[i-1]).toLowerCase();
-                            if (removePlayerString > previousInactivePlayerString && removePlayerString < nextInactivePlayerString){
-                                tempInactivePlayers = tempInactivePlayers.slice(0, i).concat(removePlayer, tempInactivePlayers.slice(i));
-                                break;
-                            }
-                            else if (i === this.state.inactivePlayers.length - 1)
-                                tempInactivePlayers = tempInactivePlayers.concat(removePlayer);
-                        }   
+            if (removePlayer.id === this.state.player1.id) {
+                this.enqueuePlayer(this.state.player1);
+                this.setState({ player1: this.state.player2, player2: this.state.playerQueue[0], playerQueue: this.state.playerQueue.slice(1) });
+                return;
+            }
+            else if (removePlayer.id === this.state.player2.id) {
+                this.enqueuePlayer(this.state.player2);
+                this.setState({ player2: this.state.playerQueue[0], playerQueue: this.state.playerQueue.slice(1) });
+                return;
+            }
+            else {
+                this.state.playerQueue.forEach((queuedPlayer, index) => {
+                    if (queuedPlayer.id === removePlayer.id) {
+                        tempPlayerQueue.splice(index, 1);
+                        for (var i = 0; i < this.state.inactivePlayers.length; i++) {
+                            nextInactivePlayerString = this.formatPlayerName(this.state.inactivePlayers[i]).toLowerCase();
+                            removePlayerString = this.formatPlayerName(removePlayer).toLowerCase();
+                            if (i === 0) {
+                                if (removePlayerString < nextInactivePlayerString) {
+                                    tempInactivePlayers.unshift(removePlayer);
+                                    break;
+                                }
+                            } else {
+                                previousInactivePlayerString = this.formatPlayerName(this.state.inactivePlayers[i-1]).toLowerCase();
+                                if (removePlayerString > previousInactivePlayerString && removePlayerString < nextInactivePlayerString){
+                                    tempInactivePlayers = tempInactivePlayers.slice(0, i).concat(removePlayer, tempInactivePlayers.slice(i));
+                                    break;
+                                }
+                                else if (i === this.state.inactivePlayers.length - 1)
+                                    tempInactivePlayers = tempInactivePlayers.concat(removePlayer);
+                            }   
+                        }
                     }
-                }
-            });
+                });
+            }
         }
         this.setState({ inactivePlayers: tempInactivePlayers, playerQueue: tempPlayerQueue })
     }
@@ -169,12 +182,30 @@ export class PingKingComponent extends React.Component {
                 res.json()
                 .then(() => {
                     this.props.alertGameSaved(true, this.formatPlayerName(player2) + " " + player2Score + " - " + player1Score + " " + this.formatPlayerName(player1) );
+                    this.queueLoser(loserId);  
                 });
             }
             else {
                 this.props.alertGameSaved(false, null);              
             }
         })
+    }
+
+    queueLoser(loserId) {
+        if (loserId === this.state.player2.id) {
+            this.removeFromQueue(this.state.player2);
+            this.setState({
+                player1Score: 0,
+                player2Score: 0,
+            })
+        }
+        else if (loserId === this.state.player1.id) {
+            this.removeFromQueue(this.state.player1);   
+            this.setState({
+                player1Score: 0,
+                player2Score: 0,
+            })
+        }
     }
   
     render() {
@@ -267,7 +298,7 @@ export class PingKingComponent extends React.Component {
                     }
                 </Col>
                 <Col md={1} sm={1}>
-                    <Button onClick={this.submitGame}>
+                    <Button bsStyle="success" onClick={this.submitGame}>
                         SUBMIT
                     </Button>   
                 </Col>
