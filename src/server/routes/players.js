@@ -67,6 +67,11 @@ router.get('/api/players/stats/:id1/:id2', (req, res) => {
             winProbability: null
         }  
     };
+    var totalWinPercentage1 = .5;
+    var totalWinPercentage2 = .5;
+    var h2hWinPercentage1 = .5;
+    var h2hWinPercentage2 = .5;
+
     db('games')
     .where({ winnerId: req.params.id1 })
     .count({ count: '*' })
@@ -103,7 +108,23 @@ router.get('/api/players/stats/:id1/:id2', (req, res) => {
                         .first()
                         .then(p2h2hWins => {
                             stats.player2.h2hWins = p2h2hWins.count;
-                            res.status(200).json(stats); //// THE END
+                            if (p1TotalWins.count != 0 || p1TotalLosses.count != 0)
+                                totalWinPercentage1 = p1TotalWins.count / (p1TotalWins.count + p1TotalLosses.count);
+                            if (p2TotalWins.count != 0 || p2TotalLosses.count != 0)                            
+                                totalWinPercentage2 = p2TotalWins.count / (p2TotalWins.count + p2TotalLosses.count);
+                            if (p1h2hWins.count != 0 || p2h2hWins.count != 0) {
+                                h2hWinPercentage1 = p1h2hWins.count / (p1h2hWins.count + p2h2hWins.count);
+                                h2hWinPercentage2 = 1.0 - h2hWinPercentage1;
+                            }
+                            const averageWinPercentage1 = (totalWinPercentage1 + h2hWinPercentage1) / 2.0;
+                            const averageWinPercentage2 = (totalWinPercentage2 + h2hWinPercentage2) / 2.0;
+                            const winCompare1 = averageWinPercentage1 / averageWinPercentage2;
+                            const winCompare2 = averageWinPercentage2 / averageWinPercentage1;
+                            const winProbability1 = 1 / ( 1 + (1 / winCompare1));
+                            const winProbability2 = 1 / ( 1 + (1 / winCompare2));
+                            stats.player1.winProbability = winProbability1;
+                            stats.player2.winProbability = winProbability2;
+                            res.status(200).json(stats);
                         })
                         .catch((error) => {
                             res.status(500).json({ error });

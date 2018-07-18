@@ -54,6 +54,7 @@ export class PingKingComponent extends React.Component {
             } 
             else if (this.state.player2 == null) {
                 this.setState({ inactivePlayers: tempInactivePlayers, player2: selectedPlayer })
+                this.getStats();            
             }
             else {
                 this.setState({ playerQueue: [...this.state.playerQueue, selectedPlayer], inactivePlayers: tempInactivePlayers });
@@ -71,11 +72,13 @@ export class PingKingComponent extends React.Component {
             if (removePlayer.id === this.state.player1.id) {
                 this.enqueuePlayer(this.state.player1);
                 this.setState({ player1: this.state.player2, player2: this.state.playerQueue[0], playerQueue: this.state.playerQueue.slice(1) });
+                this.getStats();
                 return;
             }
             else if (removePlayer.id === this.state.player2.id) {
                 this.enqueuePlayer(this.state.player2);
                 this.setState({ player2: this.state.playerQueue[0], playerQueue: this.state.playerQueue.slice(1) });
+                this.getStats();                
                 return;
             }
             else {
@@ -208,6 +211,12 @@ export class PingKingComponent extends React.Component {
         }
     }
   
+    getStats() {
+        if (this.state.player1 === null || this.state.player2 === null || this.state.player1 == this.state.player2)
+            return;
+        
+    }
+
     render() {
         return (
             <Row>
